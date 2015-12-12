@@ -104,8 +104,8 @@ opts.labelDir = fullfile(opts.dataDir, 'development_kit', 'data');
 disp('Parsing category files and labels...');
 
 if ~exist(fullfile(opts.dataDir, 'parsed.mat'), 'file')
-  % trainNames is a thing with all the filename lines of train.txt in it
-  % trainLabels is a thing with all the label lines of train.txt in it
+  % trainNames contains all the filename lines of train.txt in it
+  % trainLabels contains all the label lines of train.txt in it
   trainNames = [];
   trainLabels = [];
   f = fopen(fullfile(opts.labelDir, 'train.txt'));
@@ -119,8 +119,8 @@ if ~exist(fullfile(opts.dataDir, 'parsed.mat'), 'file')
   end
   fclose(f);
 
-  % valNames is a thing with all the filename lines of val.txt in it
-  % valLabels is a thing with all the label lines of val.txt in it
+  % valNames contains all the filename lines of val.txt in it
+  % valLabels contains all the label lines of val.txt in it
   valNames = [];
   valLabels = [];
   f = fopen(fullfile(opts.labelDir, 'val.txt'));
@@ -139,8 +139,6 @@ else
   load(savename);
 end
 
-
-
 cats = [];
 descrs = [];
 
@@ -158,7 +156,7 @@ imdb.classes.name = cats;
 imdb.classes.description = descrs;
 imdb.imageDir = fullfile(opts.dataDir, 'images') ;
 
-fprintf('searching training images ...\n') ;
+fprintf('Searching training images ...\n') ;
 names = {} ;
 labels = {} ;
 
@@ -171,7 +169,6 @@ for c = 1:length(descrs)
   catCount = catCount + 1;
   fprintf('.') ;
   if mod(numel(names), 50) == 0, fprintf('\n') ; end
-  %fprintf('found %s with %d images\n', d.name, numel(ims)) ;
 end
 
 names = horzcat(names{:}) ;
@@ -190,9 +187,7 @@ imdb.images.name = names;
 imdb.images.set = ones(1, numel(names)) ;
 imdb.images.label = labels;
 
-
-
-fprintf('searching validation images ...\n') ;
+fprintf('Searching validation images ...\n') ;
 ims = dir(fullfile(imdb.imageDir, 'val', '*.jpg')) ;
 names = sort({ims.name}) ;
 labels = valLabels;
@@ -211,58 +206,3 @@ imdb.images.id = horzcat(imdb.images.id, (1:numel(names) + 1e7 - 1));
 imdb.images.name = horzcat(imdb.images.name, names);
 imdb.images.set = horzcat(imdb.images.set, 2*ones(1,numel(names))) ;
 imdb.images.label = horzcat(imdb.images.label, labels') ;
-
-% asdfkljaksfsd
-% 
-% disp('Compiling images...');
-% 
-% numTrainIms = 10000;
-% 
-% %x1 = zeros(128,128,100000); % train images
-% %x2 = zeros(128,128,10000); % val images
-% x1 = zeros(128,128,3,numTrainIms); % train images
-% x2 = zeros(128,128,3,10000); % val images
-% y1 = trainLabels(1:numTrainIms)'; % train labels
-% y2 = valLabels'; % val labels
-% 
-% if ~exist(fullfile(opts.dataDir, 'trainMatrices.mat'), 'file')
-% %  for i = 1:length(trainNames)
-%   for i = 1:numTrainIms
-%     imgName = fullfile(opts.imgDir, trainNames(i));
-%     imgName = imgName{1,1};
-%     im=double(imread(imgName)) ;
-%     x1(:,:,:,i)=im;
-%   end
-%   savename = fullfile(opts.dataDir, 'trainMatrices.mat');
-%   save(savename, '-v7.3', 'x1', 'y1');
-% else
-%   savename = fullfile(opts.dataDir, 'trainMatrices.mat');
-%   load(savename);
-% end
-% 
-% if ~exist(fullfile(opts.dataDir, 'valMatrices.mat'), 'file')
-%   for i = 1:length(valNames)
-%     imgName = fullfile(opts.imgDir, valNames(i));
-%     imgName = imgName{1,1};
-%     im=double(imread(imgName)) ;
-%     x2(:,:,:,i)=im;
-%   end
-%   savename = fullfile(opts.dataDir, 'valMatrices.mat');
-%   save(savename, '-v7.3', 'x2', 'y2');
-% else
-%   savename = fullfile(opts.dataDir, 'valMatrices.mat');
-%   load(savename);
-% end
-% 
-% set = [ones(1,numel(y1)) 2*ones(1,numel(y2))];
-% data = single(reshape(cat(4, x1, x2),128,128,3,1,[]));
-% dataMean = mean(data(:,:,:,set == 1), 4);
-% data = bsxfun(@minus, data, dataMean) ;
-% 
-% imdb.images.data = data ;
-% imdb.images.data_mean = dataMean;
-% imdb.images.labels = cat(2, y1, y2) ;
-% imdb.images.set = set ;
-% imdb.meta.sets = {'train', 'val', 'test'} ;
-% imdb.meta.classes = arrayfun(@(x)sprintf('%d',x),0:9,'uniformoutput',false) ;
-

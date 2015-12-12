@@ -104,8 +104,8 @@ opts.labelDir = fullfile(opts.dataDir, 'development_kit', 'data');
 disp('Parsing category files and labels...');
 
 if ~exist(fullfile(opts.dataDir, 'parsed.mat'), 'file')
-  % trainNames is a thing with all the filename lines of train.txt in it
-  % trainLabels is a thing with all the label lines of train.txt in it
+  % trainNames contains all the filename lines of train.txt in it
+  % trainLabels contains all the label lines of train.txt in it
   trainNames = [];
   trainLabels = [];
   f = fopen(fullfile(opts.labelDir, 'train.txt'));
@@ -119,8 +119,8 @@ if ~exist(fullfile(opts.dataDir, 'parsed.mat'), 'file')
   end
   fclose(f);
 
-  % valNames is a thing with all the filename lines of val.txt in it
-  % valLabels is a thing with all the label lines of val.txt in it
+  % valNames contains all the filename lines of val.txt in it
+  % valLabels contains all the label lines of val.txt in it
   valNames = [];
   valLabels = [];
   f = fopen(fullfile(opts.labelDir, 'val.txt'));
@@ -139,8 +139,6 @@ else
   load(savename);
 end
 
-
-
 cats = [];
 descrs = [];
 
@@ -158,7 +156,7 @@ imdb.classes.name = cats;
 imdb.classes.description = descrs;
 imdb.imageDir = fullfile(opts.dataDir, 'images') ;
 
-fprintf('searching training images ...\n') ;
+fprintf('Searching training images ...\n') ;
 names = {} ;
 labels = {} ;
 
@@ -171,7 +169,6 @@ for c = 1:length(descrs)
   catCount = catCount + 1;
   fprintf('.') ;
   if mod(numel(names), 50) == 0, fprintf('\n') ; end
-  %fprintf('found %s with %d images\n', d.name, numel(ims)) ;
 end
 
 names = horzcat(names{:}) ;
@@ -190,9 +187,7 @@ imdb.images.name = names;
 imdb.images.set = ones(1, numel(names)) ;
 imdb.images.label = labels;
 
-
-
-fprintf('searching validation images ...\n') ;
+fprintf('Searching validation images ...\n') ;
 ims = dir(fullfile(imdb.imageDir, 'val', '*.jpg')) ;
 names = sort({ims.name}) ;
 labels = valLabels;
@@ -213,7 +208,7 @@ imdb.images.set = horzcat(imdb.images.set, 2*ones(1,numel(names))) ;
 imdb.images.label = horzcat(imdb.images.label, labels') ;
 
 % calculate average images
-disp('calculating average image stats...');
+disp('Calculating average image stats...');
 num_images = length(imdb.images.name);
 avgs = [0 0 0];
 for i = 1:num_images
@@ -224,4 +219,3 @@ for i = 1:num_images
     avgs(3) = sum(sum(im(:,:,3))) / num_images;
 end
 save('img-avgs-vgg-m.mat', 'avgs');
-
